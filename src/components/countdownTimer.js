@@ -1,5 +1,22 @@
 import React, { useState, useEffect } from "react";
+import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+
 import Time from "./time";
+import { StyleSheet, css } from "aphrodite/no-important";
+
+const styles = StyleSheet.create({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    maxWidth: 400,
+    margin: 'auto'
+  },
+  circleProgressBar: {
+    width: '100%',
+  }
+})
 
 function pad(num) {
   return (num < 10 ? "0" : "") + num;
@@ -41,11 +58,14 @@ function playSound() {
 
 export default ({ timer, onCancel }) => {
   const [time, setTime] = useState(getTime(0));
+  const [percentageLeft, setPercentageLeft] = useState(100);
 
   useEffect(() => {
     const stop = timer.start(msRemaining => {
       const time = getTime(msRemaining);
+
       setTime(time);
+      setPercentageLeft(msRemaining / timer.totalMs * 100)
 
       if (msRemaining === 0) {
         playSound();
@@ -58,14 +78,23 @@ export default ({ timer, onCancel }) => {
   }, [timer]);
 
   return (
-    <div className="countdownTimer">
-      <div className="countdownCircle">
-        <div className="countdownCircleBackground" />
-        <div className="countdownCirclePercentage" />
-      </div>
+    <div className={css(styles.root)}>
+      <CircularProgressbarWithChildren
+        classes={{
+          root: css(styles.circleProgressBar)
+        }}
+        value={percentageLeft}
+        strokeWidth={4}
+        styles={buildStyles({
+          strokeLinecap: 'round',
+          pathColor: 'var(--color-primary)',
+          trailColor: 'var(--color-grey)'
+        })}
+      >
+        <Time time={time} />
+      </CircularProgressbarWithChildren>
 
-      <Time time={time} />
-      <button onClick={onCancel}>Cancel</button>
-    </div>
+      <button onClick={onCancel} primary='true'>Cancel</button>
+    </div >
   );
 };
