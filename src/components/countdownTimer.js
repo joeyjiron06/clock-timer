@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
-import Time from "./time";
+import Timer from "../utils/timer";
+import TimerInput from './timerInput';
 import { StyleSheet, css } from "aphrodite/no-important";
 
 const styles = StyleSheet.create({
@@ -15,6 +16,10 @@ const styles = StyleSheet.create({
   },
   circleProgressBar: {
     width: '100%',
+  },
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'space-between'
   }
 })
 
@@ -41,6 +46,22 @@ function getTime(milliseconds) {
   };
 }
 
+function getTimeLeft(millis) {
+  const time = getTime(millis);
+
+  const left = [
+    ...time.hours,
+    ...time.minutes,
+    ...time.seconds,
+  ]
+    .filter(n => !!n)
+    .join('');
+
+  // console.log(left);
+
+  return left;
+}
+
 let isPlayingSound = false;
 function playSound() {
   if (isPlayingSound) {
@@ -56,26 +77,46 @@ function playSound() {
   audio.play();
 }
 
-export default ({ timer, onCancel }) => {
-  const [time, setTime] = useState(getTime(0));
+export default () => {
   const [percentageLeft, setPercentageLeft] = useState(100);
+  const [timer, setTimer] = useState(null);
+  const [text, setText] = useState(null);
+
+
 
   useEffect(() => {
-    const stop = timer.start(msRemaining => {
-      const time = getTime(msRemaining);
+    return () => {
+      if (timer) {
+        timer.stop();
+        setTimer(null);
+        setText(null)
+        setPercentageLeft(100);
+      }
+    };
+  }, [timer]);
 
-      setTime(time);
+  function onCancel() {
+    setTimer(null);
+  }
+
+  function onTextChanged(inputText) {
+    setText(inputText);
+  }
+
+  function onSubmit() {
+    const timer = Timer.from(text);
+
+    timer.stop = timer.start(msRemaining => {
+      setText(getTimeLeft(msRemaining));
       setPercentageLeft(msRemaining / timer.totalMs * 100)
 
-      if (msRemaining === 0) {
+      if (msRemaining <= 0) {
         playSound();
       }
     });
 
-    return () => {
-      stop();
-    };
-  }, [timer]);
+    setTimer(timer);
+  }
 
   return (
     <div className={css(styles.root)}>
@@ -91,10 +132,20 @@ export default ({ timer, onCancel }) => {
           trailColor: 'var(--color-grey)'
         })}
       >
-        <Time time={time} />
+        <TimerInput
+          text={text}
+          onSubmit={onSubmit}
+          onTextChanged={onTextChanged}
+        />
       </CircularProgressbarWithChildren>
 
-      <button onClick={onCancel} primary='true'>Cancel</button>
+
+      <div className={css(styles.buttonContainer)}>
+        <button onClick={onCancel}>Cancel</button>
+        <button primary="true" type="submit" onClick={() => {
+          onSubmit(text);
+        }}> Start</button>
+      </div>
     </div >
   );
 };

@@ -20,14 +20,14 @@ export default () => {
   return (
     <div className="App">
       <h1>Timer</h1>
-
+      {/* 
       <RenderIf condition={!timer}>
         <TimerInput onStart={onStart} />
       </RenderIf>
 
-      <RenderIf condition={timer}>
-        <CountdownTimer timer={timer} onCancel={onCancel} />
-      </RenderIf>
+      <RenderIf condition={timer}> */}
+      <CountdownTimer timer={timer} />
+      {/* </RenderIf> */}
     </div>
   );
 }

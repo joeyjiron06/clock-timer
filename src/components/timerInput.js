@@ -30,28 +30,10 @@ const styles = StyleSheet.create({
 
 const maxLength = 6;
 
-function padFront(string, maxLength, char) {
-  const delta = maxLength - string.length;
-  const filler = Array(delta).fill(char);
-  return [
-    ...filler,
-    ...string
-  ];
-}
 
-function getTime(rawNumberString) {
-  const [h1, h2, m1, m2, s1, s2] = padFront(rawNumberString, 6, null);
-
-  return {
-    hours: [h1, h2],
-    minutes: [m1, m2],
-    seconds: [s1, s2]
-  };
-}
-
-export default ({ onStart }) => {
-  const [inputText, setInputText] = useState('');
-  const [time, setTime] = useState(getTime(''));
+export default ({ onSubmit, text, onTextChanged }) => {
+  // const [inputText, setInputText] = useState('');
+  // const [time, setTime] = useState(Timer.getTime(''));
   const [isFocused, setIsFocused] = useState(false);
 
   function onTextChange(event) {
@@ -67,8 +49,9 @@ export default ({ onStart }) => {
       return;
     }
 
-    setInputText(event.target.value);
-    setTime(getTime(event.target.value));
+    // setInputText(event.target.value);
+    // setTime(Timer.getTime(event.target.value));
+    onTextChanged(event.target.value);
   }
 
   function onFocus() {
@@ -84,10 +67,10 @@ export default ({ onStart }) => {
       className={css(styles.timerInputContainer)}
       onSubmit={event => {
         event.preventDefault();
-        onStart(Timer.from(time));
+        onSubmit();
       }}
     >
-      <Time time={time} />
+      <Time time={Timer.getTime(text || '')} />
 
       <div className={css(styles.borderBottom, isFocused && styles.borderBottomFocused)}>
       </div>
@@ -98,12 +81,8 @@ export default ({ onStart }) => {
         onChange={onTextChange}
         onFocus={onFocus}
         onBlur={onBlur}
-        value={inputText}
+        value={text || ''}
       />
-
-      <button primary="true" type="submit">
-        Start
-      </button>
     </form>
   );
 };
