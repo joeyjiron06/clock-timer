@@ -2,7 +2,7 @@
   "name": "clock-timer",
   "version": "1.0.0",
   "private": false,
-  "homepage": "https://joeyjiron06.github.io/clock-timer",
+  "homepage": "https://clocktimer.net",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
