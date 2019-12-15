@@ -1,22 +1,11 @@
-
-
-
-function padFront(string, maxLength, char) {
-  const delta = maxLength - string.length;
-  const filler = Array(delta).fill(char);
-  return [
-    ...filler,
-    ...string
-  ];
-}
-
+import Time from './time';
 
 export default class Timer {
   constructor(totalMs) {
     this.totalMs = totalMs;
   }
 
-  start(onTick) {
+  start(onTick, onComplete) {
     const endMs = Date.now() + this.totalMs;
     let active = true;
     function onFrame() {
@@ -24,12 +13,15 @@ export default class Timer {
         return;
       }
 
-      const rawRemainingMs = endMs - Date.now();
-      const remainingMs = Math.floor(rawRemainingMs / 1000) * 1000;
+      const remainingMs = endMs - Date.now();
 
       if (remainingMs >= 0) {
         onTick(remainingMs);
         requestAnimationFrame(onFrame);
+      }
+
+      if (remainingMs <= 0) {
+        onComplete();
       }
     }
 
@@ -41,7 +33,7 @@ export default class Timer {
   }
 
   static from(timeText) {
-    const time = Timer.getTime(timeText);
+    const time = Time.fromText(timeText);
 
     let hours = time.hours.map(val => val || 0);
     let minutes = time.minutes.map(val => val || 0);
@@ -51,20 +43,6 @@ export default class Timer {
     minutes = Number(minutes[0] + minutes[1]) * 60 * 1000;
     seconds = Number(seconds[0] + seconds[1]) * 1000;
 
-    const timer = new Timer(hours + minutes + seconds);
-    timer.time = time;
-    return timer;
-  }
-
-
-  static getTime(text) {
-    const [h1, h2, m1, m2, s1, s2] = padFront(text, 6, null);
-
-    return {
-      hours: [h1, h2],
-      minutes: [m1, m2],
-      seconds: [s1, s2],
-      text
-    };
+    return new Timer(hours + minutes + seconds);
   }
 }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Timer from "../utils/timer";
+import TimeUtil from "../utils/time";
 import Time from './time';
 import { StyleSheet, css } from 'aphrodite/no-important';
 
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
 const maxLength = 6;
 
 
-export default ({ onSubmit, text, onTextChanged }) => {
+export default ({ onSubmit, text, onTextChanged, disabled }) => {
   // const [inputText, setInputText] = useState('');
   // const [time, setTime] = useState(Timer.getTime(''));
   const [isFocused, setIsFocused] = useState(false);
@@ -70,7 +70,7 @@ export default ({ onSubmit, text, onTextChanged }) => {
         onSubmit();
       }}
     >
-      <Time time={Timer.getTime(text || '')} />
+      <Time time={TimeUtil.fromText(text || '')} />
 
       <div className={css(styles.borderBottom, isFocused && styles.borderBottomFocused)}>
       </div>
@@ -78,6 +78,7 @@ export default ({ onSubmit, text, onTextChanged }) => {
       <input
         className={css(styles.timerInput)}
         type="number"
+        disabled={disabled}
         onChange={onTextChange}
         onFocus={onFocus}
         onBlur={onBlur}

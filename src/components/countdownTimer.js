@@ -3,6 +3,7 @@ import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-pro
 import 'react-circular-progressbar/dist/styles.css';
 
 import Timer from "../utils/timer";
+import Time from "../utils/time";
 import TimerInput from './timerInput';
 import { StyleSheet, css } from "aphrodite/no-important";
 
@@ -23,31 +24,11 @@ const styles = StyleSheet.create({
   }
 })
 
-function pad(num) {
-  return (num < 10 ? "0" : "") + num;
-}
 
-function getTime(milliseconds) {
-  let remain = milliseconds;
 
-  const hours = Math.floor(remain / (1000 * 60 * 60));
-  remain = remain % (1000 * 60 * 60);
-
-  const minutes = Math.floor(remain / (1000 * 60));
-  remain = remain % (1000 * 60);
-
-  const seconds = Math.floor(remain / 1000);
-  remain = remain % 1000;
-
-  return {
-    hours: pad(hours).split(""),
-    minutes: pad(minutes).split(""),
-    seconds: pad(seconds).split("")
-  };
-}
 
 function getTimeLeft(millis) {
-  const time = getTime(millis);
+  const time = Time.fromMillis(millis);
 
   const left = [
     ...time.hours,
@@ -56,8 +37,6 @@ function getTimeLeft(millis) {
   ]
     .filter(n => !!n)
     .join('');
-
-  // console.log(left);
 
   return left;
 }
@@ -82,40 +61,47 @@ export default () => {
   const [timer, setTimer] = useState(null);
   const [text, setText] = useState(null);
 
-
-
   useEffect(() => {
     return () => {
       if (timer) {
         timer.stop();
         setTimer(null);
         setText(null)
-        setPercentageLeft(100);
       }
     };
   }, [timer]);
 
   function onCancel() {
+    setText(null)
     setTimer(null);
+    setPercentageLeft(100);
   }
 
   function onTextChanged(inputText) {
     setText(inputText);
   }
 
-  function onSubmit() {
+  function startTimer() {
     const timer = Timer.from(text);
 
     timer.stop = timer.start(msRemaining => {
       setText(getTimeLeft(msRemaining));
       setPercentageLeft(msRemaining / timer.totalMs * 100)
-
-      if (msRemaining <= 0) {
-        playSound();
-      }
+    }, () => {
+      setTimer(null);
+      setPercentageLeft(0);
+      playSound();
     });
 
     setTimer(timer);
+  }
+
+  function onSubmit() {
+    if (!text || timer) {
+      return;
+    }
+
+    startTimer();
   }
 
   return (
@@ -133,6 +119,7 @@ export default () => {
         })}
       >
         <TimerInput
+          disabled={!!timer}
           text={text}
           onSubmit={onSubmit}
           onTextChanged={onTextChanged}
@@ -142,9 +129,7 @@ export default () => {
 
       <div className={css(styles.buttonContainer)}>
         <button onClick={onCancel}>Cancel</button>
-        <button primary="true" type="submit" onClick={() => {
-          onSubmit(text);
-        }}> Start</button>
+        <button primary="true" type="submit" onClick={onSubmit}> Start</button>
       </div>
     </div >
   );
