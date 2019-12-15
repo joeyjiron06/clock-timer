@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
 
 function Icon({ src, url, alt }) {
   return (
-    <a href={url} className={css(styles.icon)} target="_blank">
+    <a href={url} className={css(styles.icon)} target="_blank" rel="noopener noreferrer">
       <img src={src} alt={alt} />
     </a>
   )
