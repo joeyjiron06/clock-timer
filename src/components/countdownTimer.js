@@ -3,7 +3,7 @@ import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-pro
 import 'react-circular-progressbar/dist/styles.css';
 
 import Timer from "../utils/timer";
-import Time from "../utils/time";
+import { createTimeFromMs, textToMillis } from "../utils/time";
 import TimerInput from './timerInput';
 import { StyleSheet, css } from "aphrodite/no-important";
 
@@ -24,11 +24,13 @@ const styles = StyleSheet.create({
   }
 })
 
+const maxLength = 6;
+
 
 
 
 function getTimeLeft(millis) {
-  const time = Time.fromMillis(millis);
+  const time = createTimeFromMs(millis);
 
   const left = [
     ...time.hours,
@@ -77,12 +79,24 @@ export default () => {
     setPercentageLeft(100);
   }
 
-  function onTextChanged(inputText) {
+  function onTextChanged(event) {
+    const inputText = event.target.value;
+
+    if (inputText.length > maxLength) {
+      return;
+    }
+
+    if (inputText[0] === "0") {
+      return;
+    }
+
+
     setText(inputText);
   }
 
   function startTimer() {
-    const timer = Timer.from(text);
+    const millis = textToMillis(text);
+    const timer = new Timer(millis);
 
     timer.stop = timer.start(msRemaining => {
       setText(getTimeLeft(msRemaining));

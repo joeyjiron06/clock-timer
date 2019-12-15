@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import TimeUtil from "../utils/time";
+import { createTimeFromText } from "../utils/time";
 import Time from './time';
 import { StyleSheet, css } from 'aphrodite/no-important';
 
@@ -28,30 +28,30 @@ const styles = StyleSheet.create({
   }
 });
 
-const maxLength = 6;
+const ALLOWED_KEYS = new Set([
+  '0',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  'Enter'
+]);
 
 
 export default ({ onSubmit, text, onTextChanged, disabled }) => {
-  // const [inputText, setInputText] = useState('');
-  // const [time, setTime] = useState(Timer.getTime(''));
   const [isFocused, setIsFocused] = useState(false);
 
-  function onTextChange(event) {
-    if (event.target.value.length > maxLength) {
-      return;
-    }
 
-    if (event.target.value[0] === "0") {
-      return;
+  function onKeyPress(event) {
+    console.log('event.key', event.key);
+    if (!ALLOWED_KEYS.has(event.key)) {
+      event.preventDefault();
     }
-
-    if (event.target.value.includes("-")) {
-      return;
-    }
-
-    // setInputText(event.target.value);
-    // setTime(Timer.getTime(event.target.value));
-    onTextChanged(event.target.value);
   }
 
   function onFocus() {
@@ -70,7 +70,7 @@ export default ({ onSubmit, text, onTextChanged, disabled }) => {
         onSubmit();
       }}
     >
-      <Time time={TimeUtil.fromText(text || '')} />
+      <Time time={createTimeFromText(text || '')} />
 
       <div className={css(styles.borderBottom, isFocused && styles.borderBottomFocused)}>
       </div>
@@ -79,9 +79,10 @@ export default ({ onSubmit, text, onTextChanged, disabled }) => {
         className={css(styles.timerInput)}
         type="number"
         disabled={disabled}
-        onChange={onTextChange}
+        onChange={onTextChanged}
         onFocus={onFocus}
         onBlur={onBlur}
+        onKeyPress={onKeyPress}
         value={text || ''}
       />
     </form>
