@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-
+import { StyleSheet, css } from "aphrodite/no-important";
 import Timer from "../utils/timer";
 import { createTimeFromMs, textToMillis } from "../utils/time";
 import TimerInput from './timerInput';
-import { StyleSheet, css } from "aphrodite/no-important";
+import * as Metrics from '../utils/metrics';
 
 const styles = StyleSheet.create({
   root: {
@@ -82,6 +82,10 @@ export default () => {
   }, [timer]);
 
   function onCancel() {
+    if (timer) {
+      Metrics.timerCancelled(timer.remainingMs());
+    }
+
     setText(null)
     setTimer(null);
     setPercentageLeft(100);
@@ -113,9 +117,11 @@ export default () => {
       setTimer(null);
       setPercentageLeft(0);
       playSound();
+      Metrics.timerFinished(millis);
     });
 
     setTimer(timer);
+    Metrics.timerStarted(millis);
   }
 
   function onSubmit() {

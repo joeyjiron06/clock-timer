@@ -3,15 +3,20 @@ export default class Timer {
     this.totalMs = totalMs;
   }
 
+  remainingMs() {
+    return this.endMs - Date.now();
+  }
+
   start(onTick, onComplete) {
-    const endMs = Date.now() + this.totalMs;
+    this.endMs = Date.now() + this.totalMs;
+
     let active = true;
-    function onFrame() {
+    const onFrame = () => {
       if (!active) {
         return;
       }
 
-      const remainingMs = endMs - Date.now();
+      const remainingMs = this.remainingMs();
 
       if (remainingMs >= 0) {
         onTick(remainingMs);
