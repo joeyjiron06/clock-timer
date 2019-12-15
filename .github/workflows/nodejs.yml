@@ -20,9 +20,14 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: deploy
+    - name: build
       run: |
         npm install
-        npm run deploy
+        npm run build
+    - name: Deploy to GitHub Pages
+      uses: crazy-max/ghaction-github-pages@v1.2.5
+      with:
+        build_dir: 
+          build
       env:
         CI: true
