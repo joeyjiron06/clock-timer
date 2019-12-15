@@ -13,7 +13,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'stretch',
     maxWidth: 400,
-    margin: 'auto'
+    margin: 'auto',
+    padding: 20
   },
   circleProgressBar: {
     width: '100%',
@@ -41,19 +42,28 @@ function getTimeLeft(millis) {
   return left;
 }
 
-let isPlayingSound = false;
+const audio = new Audio();
+audio.src = 'bell.mp3';
+
 function playSound() {
-  if (isPlayingSound) {
+  if (!audio.paused) {
     return;
   }
 
-  const audio = new Audio();
-  audio.src = 'bell.mp3';
-  audio.onended = () => {
-    isPlayingSound = false;
-  };
-  isPlayingSound = true;
   audio.play();
+}
+
+// required for iOS devices. this is a workaround the restrictions that iOS puts on javascript
+// more reading here https://medium.com/@curtisrobinson/how-to-auto-play-audio-in-safari-with-javascript-21d50b0a2765
+function preloadSound() {
+  if (audio.hasPreloaded) {
+    return;
+  }
+
+  audio.play();
+  audio.pause();
+  audio.currentTime = 0;
+  audio.hasPreloaded = true;
 }
 
 export default () => {
@@ -113,6 +123,7 @@ export default () => {
       return;
     }
 
+    preloadSound();
     startTimer();
   }
 

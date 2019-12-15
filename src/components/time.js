@@ -5,6 +5,12 @@ import { StyleSheet, css } from 'aphrodite/no-important';
 const styles = StyleSheet.create({
   timerText: {
     fontSize: 60,
+    '@media screen and (max-width: 360px)': {
+      fontSize: 48,
+    },
+    '@media screen and (max-width: 320px)': {
+      fontSize: 24,
+    }
   },
   timerInputText: {
     position: 'absolute',
@@ -19,7 +25,10 @@ const styles = StyleSheet.create({
   },
   timerTextUnit: {
     fontSize: 30,
-    marginRight: 10
+    marginRight: 10,
+    '@media screen and (max-width: 320px)': {
+      fontSize: 12,
+    }
   }
 });
 
