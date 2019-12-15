@@ -78,6 +78,7 @@ export default ({ onSubmit, text, onTextChanged, disabled }) => {
       <input
         className={css(styles.timerInput)}
         type="number"
+        pattern="[0-9]*"
         disabled={disabled}
         onChange={onTextChanged}
         onFocus={onFocus}
