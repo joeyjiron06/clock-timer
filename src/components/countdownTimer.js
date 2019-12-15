@@ -27,8 +27,6 @@ const styles = StyleSheet.create({
 const maxLength = 6;
 
 
-
-
 function getTimeLeft(millis) {
   const time = createTimeFromMs(millis);
 

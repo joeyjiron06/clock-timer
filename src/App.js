@@ -1,5 +1,6 @@
 import React from "react";
 import CountdownTimer from "./components/countdownTimer";
+import Social from './components/social';
 
 import "./index.css";
 
@@ -8,6 +9,9 @@ export default () => {
     <div className="App">
       <h1>Clock Timer</h1>
       <CountdownTimer />
+
+
+      <Social />
     </div>
   );
 }
