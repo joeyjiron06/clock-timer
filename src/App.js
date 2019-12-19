@@ -7,7 +7,7 @@ import "./index.css";
 export default () => {
   return (
     <div className="App">
-      <h1>Clock Timer</h1>
+      <h1>Timer</h1>
       <CountdownTimer />
       <Social />
     </div>
